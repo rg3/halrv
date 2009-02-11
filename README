@@ -45,6 +45,48 @@ name if no filesystem label is present.
 This operation will ask HAL to unmount and eject a device. Its name must
 be provided as an additional argument like in the "mount" operation.
 
+== CONFIGURATION FILE ==
+
+halrv uses the configuration file $HOME/.halrv.conf. It will be created
+the first time you run the program and populated with sane defaults. The
+configuration file allows you to specify mount options per filesystem
+and per volume. Most people will be fine without ever editing its
+contents.
+
+You can edit the file with any text editor. It is divided in sections.
+Each section lets you specify mount options for a given type of
+filesystem or for a specific volume identified by its UUID. When
+mounting a volume, halrv will try to see if its UUID matches any section
+in the configuration file, and will use those options. If no section
+matches the UUID, it will try to use options from a section that matches
+the filesystem type. If none is found, it will indicate no specific
+mount options to HAL.
+
+Sections have a section name in brackets followed by _keyword: value_
+pairs, one for each line, below.
+
+You can specify mount options for a specific volume using its UUID as
+listed with the "ls" operation. You only need to create a section named
+_uuid:VOLUME UUID_.
+
+You can specify mount options for a specific type of filesystem by
+creating a section named _fs:FILESYSTEM TYPE_, where the filesystem type
+can be vfat, ntfs-3g or some other.
+
+Below the section name you can (actually, you must) write an entry with
+the keyword "mount_options" and a list of comma separated mount options
+to be used, like in /etc/fstab.
+
+Example:
+
+-------------------
+[fs:vfat]
+mount_options: uid=1000
+
+[uuid:4026-23C0]
+mount_options: uid=1000,shortname=winnt
+-------------------
+
 == AUTHOR ==
 
 Ricardo Garcia Gonzalez: http://freshmeat.net/users/rg3/

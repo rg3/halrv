@@ -1,0 +1,50 @@
+= halrv(1) =
+
+== NAME ==
+
+halrv - Command line removable volumes manager using HAL
+
+== SYNOPSIS ==
+
+halrv [operation [device]]
+
+== DESCRIPTION ==
+
+halrv is a simple command line tool to manage removable volumes using
+HAL. It aims to be the command line equivalent of many GUI programs that
+display a list of removable drives in your computer, allow you to mount
+them by clicking on their icon and, later, unmount and eject them (also
+called "safe removal").
+
+With halrv, you can list removable volumes, mount a specific device, and
+eject a specific device. It does not depend on any GUI libraries.
+
+== OPERATIONS ==
+
+=== help, --help, -h, -? ===
+
+This operation will make the program print a brief list of every
+available operation with its corresponding description.
+
+=== ls or no operation ===
+
+When halrv is invoked with no operation, it does the same as if the
+operation was "ls". This operation prints a table of removable devices
+present in your system, with their corresponding filesystem labels,
+UUIDs and mount point if currently mounted.
+
+=== mount ===
+
+The "mount" operation needs an additional argument which must be a
+device name, as listed by the "ls" operation. The program will ask HAL
+to mount the device in a mount point by label if possible, or by device
+name if no filesystem label is present.
+
+=== eject ===
+
+This operation will ask HAL to unmount and eject a device. Its name must
+be provided as an additional argument like in the "mount" operation.
+
+== AUTHOR ==
+
+Ricardo Garcia Gonzalez: http://freshmeat.net/users/rg3/

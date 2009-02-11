@@ -23,11 +23,6 @@ FS_SECTION_PREFIX = 'fs'
 UUID_SECTION_PREFIX = 'uuid'
 MOUNT_OPTIONS_OPTION = 'mount_options'
 
-MOUNT_OPTIONS = {
-	'vfat':		['uid=%s' % os.getuid()],
-	#'ntfs-3g':	['uid=%s' % os.getuid()], # I get InvalidMountOption
-}
-
 # Return user home directory
 def get_home():
 	home = os.getenv('HOME')

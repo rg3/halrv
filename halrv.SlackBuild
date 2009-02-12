@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+# Exit on errors
+set -e
+
+# Set sane umask
+umask 022
+
+# Set language (this helps sometimes)
+export LANG=C
+
+# Set a basic PATH
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# Initial variables
+PNAME=halrv		# Package name
+PVERSION=1		# Package version (remove dashes if present)
+ARCH=${ARCH:-noarch}	# Package architecture
+BUILD=${BUILD:-1rg}	# Build number plus packager initials
+
+CWD=$( pwd )
+TMP=${TMP:-/tmp}	# Location to compile the source
+PKG=$TMP/package-$PNAME	# Location to build the package (use "package-$NAME" to avoid poss. conflicts)
+
+# Clear sandbox directory
+rm -rf $PKG
+mkdir -p $PKG
+
+# Copy files to sandbox
+mkdir -p $PKG/usr/bin
+mkdir -p $PKG/usr/man/man1
+mkdir -p $PKG/usr/doc/$PNAME-$PVERSION
+install -m 755 halrv $PKG/usr/bin
+install -m 644 halrv.1 $PKG/usr/man/man1
+install -m 644 README $PKG/usr/doc/$PNAME-$PVERSION
+install -m 644 COPYING $PKG/usr/doc/$PNAME-$PVERSION
+
+# gzip manpage
+gzip -9 $PKG/usr/man/man1/halrv.1
+
+# Add package description
+mkdir -p $PKG/install
+cat >$PKG/install/slack-desc <<EOF
+      |-----handy-ruler------------------------------------------------------|
+$PNAME: $PNAME (Removable volumes manager)
+$PNAME:
+$PNAME: $PNAME is a command line removable volumes manager using HAL. It lets
+$PNAME: the user list removable volumes present in the system, mount them
+$PNAME: end unmount/eject them using HAL.
+$PNAME:
+$PNAME:
+$PNAME:
+$PNAME:
+$PNAME:
+$PNAME:
+EOF
+
+# Create package
+cd $PKG
+makepkg -l y -c n $CWD/$PNAME-$PVERSION-$ARCH-$BUILD.tgz
+
+# Clean up the compilation and package directories
+rm -rf $PKG
+cd $TMP
+rm -rf $SRCDIR

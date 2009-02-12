@@ -1,0 +1,63 @@
+.\"     Title: halrv
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
+.\"      Date: 02/11/2009
+.\"    Manual: 
+.\"    Source: 
+.\"
+.TH "HALRV" "1" "02/11/2009" "" ""
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+halrv - Command line removable volumes manager using HAL
+.SH "SYNOPSIS"
+halrv [operation [device]]
+.sp
+.SH "DESCRIPTION"
+halrv is a simple command line tool to manage removable volumes using HAL\. It aims to be the command line equivalent of many GUI programs that display a list of removable drives in your computer, allow you to mount them by clicking on their icon and, later, unmount and eject them (also called "safe removal")\.
+.sp
+With halrv, you can list removable volumes, mount a specific device, and eject a specific device\. It does not depend on any GUI libraries\.
+.sp
+.SH "OPERATIONS"
+.SS "help, \-\-help, \-h, \-?"
+This operation will make the program print a brief list of every available operation with its corresponding description\.
+.sp
+.SS "ls or no operation"
+When halrv is invoked with no operation, it does the same as if the operation was "ls"\. This operation prints a table of removable devices present in your system, with their corresponding filesystem labels, UUIDs and mount point if currently mounted\.
+.sp
+.SS "mount"
+The "mount" operation needs an additional argument which must be a device name, as listed by the "ls" operation\. The program will ask HAL to mount the device in a mount point by label if possible, or by device name if no filesystem label is present\.
+.sp
+.SS "eject"
+This operation will ask HAL to unmount and eject a device\. Its name must be provided as an additional argument like in the "mount" operation\.
+.sp
+.SH "CONFIGURATION FILE"
+halrv uses the configuration file $HOME/\.halrv\.conf\. It will be created the first time you run the program and populated with sane defaults\. The configuration file allows you to specify mount options per filesystem and per volume\. Most people will be fine without ever editing its contents\.
+.sp
+You can edit the file with any text editor\. It is divided in sections\. Each section lets you specify mount options for a given type of filesystem or for a specific volume identified by its UUID\. When mounting a volume, halrv will try to see if its UUID matches any section in the configuration file, and will use those options\. If no section matches the UUID, it will try to use options from a section that matches the filesystem type\. If none is found, it will indicate no specific mount options to HAL\.
+.sp
+Sections have a section name in brackets followed by \fIkeyword: value\fR pairs, one for each line, below\.
+.sp
+You can specify mount options for a specific volume using its UUID as listed with the "ls" operation\. You only need to create a section named \fIuuid:VOLUME UUID\fR\.
+.sp
+You can specify mount options for a specific type of filesystem by creating a section named \fIfs:FILESYSTEM TYPE\fR, where the filesystem type can be vfat, ntfs\-3g or some other\.
+.sp
+Below the section name you can (actually, you must) write an entry with the keyword "mount_options" and a list of comma separated mount options to be used, like in /etc/fstab\.
+.sp
+Example:
+.sp
+.sp
+.RS 4
+.nf
+[fs:vfat]
+mount_options: uid=1000
+
+[uuid:4026\-23C0]
+mount_options: uid=1000,shortname=winnt
+.fi
+.RE
+.SH "AUTHOR"
+Ricardo Garcia Gonzalez: http://freshmeat\.net/users/rg3/
+.sp

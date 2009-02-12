@@ -26,6 +26,10 @@ eject a specific device. It does not depend on any GUI libraries.
 This operation will make the program print a brief list of every
 available operation with its corresponding description.
 
+=== version, --version ===
+
+This operation will make the program print its version number.
+
 === ls or no operation ===
 
 When halrv is invoked with no operation, it does the same as if the

@@ -14,13 +14,13 @@ export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 # Initial variables
 PNAME=halrv		# Package name
-PVERSION=1		# Package version (remove dashes if present)
+PVERSION=1		# Package version
 ARCH=${ARCH:-noarch}	# Package architecture
 BUILD=${BUILD:-1rg}	# Build number plus packager initials
 
 CWD=$( pwd )
-TMP=${TMP:-/tmp}	# Location to compile the source
-PKG=$TMP/package-$PNAME	# Location to build the package (use "package-$NAME" to avoid poss. conflicts)
+TMP=${TMP:-/tmp}
+PKG=$TMP/package-$PNAME	# Location to create package structure
 
 # Clear sandbox directory
 rm -rf $PKG
@@ -59,7 +59,5 @@ EOF
 cd $PKG
 makepkg -l y -c n $CWD/$PNAME-$PVERSION-$ARCH-$BUILD.tgz
 
-# Clean up the compilation and package directories
+# Clean up the sandbox directory
 rm -rf $PKG
-cd $TMP
-rm -rf $SRCDIR

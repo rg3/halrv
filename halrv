@@ -84,11 +84,11 @@ def parse_args(argv):
 		operation = 'ls'
 	else:
 		operation = argv[1]
-	if operation not in ['help', '-?', '-h', '--help', 'version', '--version', 'ls', 'mount', 'eject']:
+	if operation not in ['help', '-?', '-h', '--help', 'version', '--version', 'ls', 'mount', 'umount', 'eject']:
 		sys.exit('ERROR: %s: unknown operation; use the "help" operation for a list' % operation)
 	if operation in ['ls', 'help', '-?', '-h', '--help', 'version', '--version'] and len(argv) > 2:
 		sys.exit('ERROR: %s does not expect any argument')
-	if operation in ['mount', 'eject']:
+	if operation in ['mount', 'umount', 'eject']:
 		if len(argv) != 3:
 			sys.exit('ERROR: %s needs one argument' % operation)
 		devicename = argv[2]
@@ -108,6 +108,7 @@ def print_help():
 	print '  %s version           Print program version'        % progname
 	print '  %s --version         Print program version'        % progname
 	print '  %s mount <device>    Mount the device'             % progname
+	print '  %s umount <device>   Unmount the device'           % progname
 	print '  %s eject <device>    Unmount and eject the device' % progname
 
 # Print program version
@@ -205,26 +206,32 @@ def mount_operation(devs, remvols, devicename, fsopts, uuidopts):
 	except (dbus.exceptions.DBusException, ), err:
 		sys.exit('ERROR: unable to mount %s: %s' % (devicename, err.get_dbus_name()))
 
-# Perform "eject" operation
-def eject_operation(devs, remvols, devicename):
+# Perform "umount/eject" operation
+def umount_operation(devs, remvols, devicename, do_eject=False):
+	last_action = 'unmount'
+
 	# Get device bus name
 	busname = get_bus_name(devs, remvols, devicename)
 
-	# Attempt to eject the device
+	# Attempt to umount/eject the device
 	try:
 		# First, attempt to unmount it
 		try:
 			remvols[busname].Unmount([])
 		except (dbus.exceptions.DBusException, ), err:
 			if err.get_dbus_name() == 'org.freedesktop.Hal.Device.Volume.NotMounted':
+				if not do_eject:
+					print '%s is not mounted' % devicename
 				pass
 			else:
 				raise err
 
-		# Then, eject it
-		remvols[busname].Eject([])
+		# Eject it if needed
+		if do_eject:
+			last_action = 'eject'
+			remvols[busname].Eject([])
 	except (dbus.exceptions.DBusException, ), err:
-		print 'ERROR: unable to eject %s: %s' % (devs[busname].GetProperty('block.device'), err.get_dbus_name())
+		print 'ERROR: unable to %s %s: %s' % (last_action, devs[busname].GetProperty('block.device'), err.get_dbus_name())
 
 ### Main program ###
 if __name__ == '__main__':
@@ -268,8 +275,10 @@ if __name__ == '__main__':
 		ls_operation(devs, remvols)
 	elif operation == 'mount':
 		mount_operation(devs, remvols, devicename, fsopts, uuidopts)
+	elif operation == 'umount':
+		umount_operation(devs, remvols, devicename)
 	else:
-		eject_operation(devs, remvols, devicename)
+		umount_operation(devs, remvols, devicename, do_eject=True)
 	
 	# Exit with success
 	sys.exit(0)

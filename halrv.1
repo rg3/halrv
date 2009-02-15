@@ -1,11 +1,11 @@
 .\"     Title: halrv
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 02/12/2009
+.\"      Date: 02/15/2009
 .\"    Manual: 
 .\"    Source: 
 .\"
-.TH "HALRV" "1" "02/12/2009" "" ""
+.TH "HALRV" "1" "02/15/2009" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -33,8 +33,11 @@ When halrv is invoked with no operation, it does the same as if the operation wa
 .SS "mount"
 The "mount" operation needs an additional argument which must be a device name, as listed by the "ls" operation\. The program will ask HAL to mount the device in a mount point by label if possible, or by device name if no filesystem label is present\.
 .sp
+.SS "umount"
+The program will ask HAL to unmount the device provided as an additional argument, like in the "mount" operation\.
+.sp
 .SS "eject"
-This operation will ask HAL to unmount and eject a device\. Its name must be provided as an additional argument like in the "mount" operation\.
+Identical to the umount operation but, in addition, the program will ask HAL to eject the device, in order to be able to "safely remove it"\. Usually, you want to perform this operation instead of only unmounting the device\.
 .sp
 .SH "CONFIGURATION FILE"
 halrv uses the configuration file $HOME/\.halrv\.conf\. It will be created the first time you run the program and populated with sane defaults\. The configuration file allows you to specify mount options per filesystem and per volume\. Most people will be fine without ever editing its contents\.

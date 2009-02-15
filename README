@@ -44,10 +44,16 @@ device name, as listed by the "ls" operation. The program will ask HAL
 to mount the device in a mount point by label if possible, or by device
 name if no filesystem label is present.
 
+=== umount ===
+
+The program will ask HAL to unmount the device provided as an additional
+argument, like in the "mount" operation.
+
 === eject ===
 
-This operation will ask HAL to unmount and eject a device. Its name must
-be provided as an additional argument like in the "mount" operation.
+Identical to the umount operation but, in addition, the program will ask
+HAL to eject the device, in order to be able to "safely remove it". Usually,
+you want to perform this operation instead of only unmounting the device.
 
 == CONFIGURATION FILE ==
 

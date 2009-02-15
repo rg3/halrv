@@ -44,9 +44,9 @@ cat >$PKG/install/slack-desc <<EOF
       |-----handy-ruler------------------------------------------------------|
 $PNAME: $PNAME (Removable volumes manager)
 $PNAME:
-$PNAME: $PNAME is a command line removable volumes manager using HAL. It lets
-$PNAME: the user list removable volumes present in the system, mount them
-$PNAME: end unmount/eject them using HAL.
+$PNAME: $PNAME is a command line removable volumes manager. It lets the user
+$PNAME: list removable volumes present in the system, mount them and
+$PNAME: unmount/eject them using HAL.
 $PNAME:
 $PNAME:
 $PNAME:

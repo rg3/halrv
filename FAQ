@@ -1,0 +1,17 @@
+= Frequently Asked Questions =
+
+*Question*: When I run halrv, a lot of error messages are printed on
+screen and the program does not seem to be working properly. What is the
+problem?
+
+Answer: A faulty HAL configuration file for dbus may provoke error
+messages about halrv not being able to introspect method signatures.
+This has happened in Slackware. Be sure to have a proper HAL dbus
+configuration file in place to allow introspection and those messages
+will disappear. For Slackware 12.2 users, Robby Workman created a proper
+configuration file. It may be available at the following URL:
+
+http://slackware.com/~rworkman/hal.conf.txt
+
+You should back up your /etc/dbus-1/system.d/hal.conf and replace its
+contents with the above file.

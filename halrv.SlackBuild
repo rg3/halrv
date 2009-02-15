@@ -34,6 +34,7 @@ install -m 755 halrv $PKG/usr/bin
 install -m 644 halrv.1 $PKG/usr/man/man1
 install -m 644 README $PKG/usr/doc/$PNAME-$PVERSION
 install -m 644 COPYING $PKG/usr/doc/$PNAME-$PVERSION
+install -m 644 FAQ $PKG/usr/doc/$PNAME-$PVERSION
 
 # gzip manpage
 gzip -9 $PKG/usr/man/man1/halrv.1

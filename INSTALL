@@ -1,0 +1,20 @@
+If you are reading this, it is probably because your distribution or
+system does not provide an official package for halrv. If you are lucky,
+halrv may provide a way to create a package for it, like a package
+creation script.
+
+Supported systems using this method:
+
+* Slackware Linux, running halrv.SlackBuild as root and installing the
+  resulting package.
+
+If no official package is available and no package creation tool is
+available, halrv really only needs two files you can copy to /usr/local:
+
+* halrv, the program itself, which should go to /usr/local/bin
+* halrv.1, the program manpage, which should go to /usr/local/man/man1
+
+To run, halrv needs Python and dbus-python.
+
+Uninstalling the program is as easy as removing those two files you
+would have copied.

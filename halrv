@@ -19,7 +19,6 @@ HAL_MANAGER_IFACE = 'org.freedesktop.Hal.Manager'
 HAL_DEVICE_IFACE = 'org.freedesktop.Hal.Device'
 HAL_VOLUME_IFACE = 'org.freedesktop.Hal.Device.Volume'
 
-LOG_FILENAME = '.halrv.log'
 CONFIG_FILENAME = '.halrv.conf'
 FS_SECTION_PREFIX = 'fs'
 UUID_SECTION_PREFIX = 'uuid'
@@ -29,18 +28,8 @@ MOUNT_OPTIONS_OPTION = 'mount_options'
 def get_home():
 	home = os.getenv('HOME')
 	if home is None:
-		print 'ERROR: no HOME environment variable'
-		sys.exit(1)
+		sys.exit('ERROR: no HOME environment variable')
 	return home
-
-# Send stderr to a log file
-def redirect_stderr(home):
-	logname = os.path.join(home, LOG_FILENAME)
-	try:
-		sys.stderr = open(logname, 'w')
-	except (IOError, OSError):
-		print 'ERROR: unable to open log file for writing: %s' % logname
-		sys.exit(1)
 
 # Create a default config file if none is present
 def maybe_create_config_file(home):
@@ -53,8 +42,7 @@ def maybe_create_config_file(home):
 		print >>configfile, 'mount_options: uid=%s' % os.getuid()
 		configfile.close()
 	except (IOError, OSError), err:
-		print 'ERROR: unable to create config file: %s' % configname
-		sys.exit(1)
+		sys.exit('ERROR: unable to create config file: %s' % configname)
 
 # Parse configuration file
 def parse_config_file(home):
@@ -68,21 +56,17 @@ def parse_config_file(home):
 	try:
 		config.read([configname])
 	except (ConfigParser.Error, ), err:
-		print 'ERROR: unable to parse config file: %s' % configname
-		sys.exit(1)
+		sys.exit('ERROR: unable to parse config file: %s' % configname)
 
 	# Process sections and options, populating the dictionaries
 	for section in config.sections():
 		splitname = section.split(':')
 		if splitname[0] not in [FS_SECTION_PREFIX, UUID_SECTION_PREFIX] or len(splitname) != 2 or len(splitname[1]) == 0:
-			print 'ERROR: invalid section name in config file: %s' % section
-			sys.exit(1)
+			sys.exit('ERROR: invalid section name in config file: %s' % section)
 		if not config.has_option(section, MOUNT_OPTIONS_OPTION):
-			print 'ERROR: %s not present in config file section %s' % (MOUNT_OPTIONS_OPTION, section)
-			sys.exit(1)
+			sys.exit('ERROR: %s not present in config file section %s' % (MOUNT_OPTIONS_OPTION, section))
 		if len(config.get(section, MOUNT_OPTIONS_OPTION)) == 0:
-			print 'ERROR: empty %s in config file section %s' % (MOUNT_OPTIONS_OPTION, section)
-			sys.exit(1)
+			sys.exit('ERROR: empty %s in config file section %s' % (MOUNT_OPTIONS_OPTION, section))
 
 		mount_opts = config.get(section, MOUNT_OPTIONS_OPTION).split(',')
 		if splitname[0] == FS_SECTION_PREFIX:
@@ -102,15 +86,12 @@ def parse_args(argv):
 	else:
 		operation = argv[1]
 	if operation not in ['help', '-?', '-h', '--help', 'version', '--version', 'ls', 'mount', 'eject']:
-		print 'ERROR: %s: unknown operation; use the "help" operation for a list' % operation
-		sys.exit(1)
+		sys.exit('ERROR: %s: unknown operation; use the "help" operation for a list' % operation)
 	if operation in ['ls', 'help', '-?', '-h', '--help', 'version', '--version'] and len(argv) > 2:
-		print 'ERROR: %s does not expect any argument'
-		sys.exit(1)
+		sys.exit('ERROR: %s does not expect any argument')
 	if operation in ['mount', 'eject']:
 		if len(argv) != 3:
-			print 'ERROR: %s needs one argument' % operation
-			sys.exit(1)
+			sys.exit('ERROR: %s needs one argument' % operation)
 		devicename = argv[2]
 
 	return (operation, devicename)
@@ -166,11 +147,9 @@ def get_volumes(sysbus, devs):
 def get_bus_name(devs, remvols, devicename):
 	matching = [x for x in remvols if devs[x].GetProperty('block.device') == devicename]
 	if len(matching) == 0:
-		print 'ERROR: no such device: %s' % devicename
-		sys.exit(1)
+		sys.exit('ERROR: no such device: %s' % devicename)
 	if len(matching) > 1:
-		print 'ERROR: unexpected situation: %s matches more than one device' % devicename
-		sys.exit(1)
+		sys.exit('ERROR: unexpected situation: %s matches more than one device' % devicename)
 	return matching[0]
 
 # Perform "ls" operation
@@ -197,14 +176,12 @@ def mount_operation(devs, remvols, devicename, fsopts, uuidopts):
 	# Try to see if it's already mounted
 	mountpoint = devs[busname].GetProperty('volume.mount_point')
 	if len(mountpoint) != 0:
-		print 'ERROR: %s is already mounted on %s' % (devicename, mountpoint)
-		sys.exit(1)
+		sys.exit('ERROR: %s is already mounted on %s' % (devicename, mountpoint))
 
 	# Get filesystem type
 	fstype = devs[busname].GetProperty('volume.fstype')
 	if len(fstype) == 0:
-		print 'ERROR: unable to know filesystem type on %s' % devicename
-		sys.exit(1)
+		sys.exit('ERROR: unable to know filesystem type on %s' % devicename)
 	
 	# Decide mount point
 	label = devs[busname].GetProperty('volume.label')
@@ -227,8 +204,7 @@ def mount_operation(devs, remvols, devicename, fsopts, uuidopts):
 		remvols[busname].Mount(mountpoint, fstype, mountopts)
 		print '%s mounted on %s' % (devicename, devs[busname].GetProperty('volume.mount_point'))
 	except (dbus.exceptions.DBusException, ), err:
-		print 'ERROR: unable to mount %s: %s' % (devicename, err.get_dbus_name())
-		sys.exit(1)
+		sys.exit('ERROR: unable to mount %s: %s' % (devicename, err.get_dbus_name()))
 
 # Perform "eject" operation
 def eject_operation(devs, remvols, devicename):
@@ -252,13 +228,11 @@ def eject_operation(devs, remvols, devicename):
 		print 'ERROR: unable to eject %s: %s' % (devs[busname].GetProperty('block.device'), err.get_dbus_name())
 
 ### Main program ###
-try:
+if __name__ == '__main__':
+
 	# Get home dir
 	home = get_home()
 	
-	# Redirect stderr
-	redirect_stderr(home)
-
 	# Create config file if it does not exist
 	maybe_create_config_file(home)
 
@@ -300,7 +274,3 @@ try:
 	
 	# Exit with success
 	sys.exit(0)
-
-except (Exception, ), err:
-	traceback.print_exc(file=sys.stdout)
-	sys.exit(1)

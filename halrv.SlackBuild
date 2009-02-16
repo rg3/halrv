@@ -27,11 +27,10 @@ rm -rf $PKG
 mkdir -p $PKG
 
 # Copy files to sandbox
-mkdir -p $PKG/usr/bin
-mkdir -p $PKG/usr/man/man1
+git archive --format=tar --prefix=$PNAME/ HEAD | ( cd $TMP && tar xf - )
+cd $TMP/$PNAME
+python setup.py install --root "$PKG"
 mkdir -p $PKG/usr/doc/$PNAME-$PVERSION
-install -m 755 halrv $PKG/usr/bin
-install -m 644 halrv.1 $PKG/usr/man/man1
 install -m 644 README $PKG/usr/doc/$PNAME-$PVERSION
 install -m 644 COPYING $PKG/usr/doc/$PNAME-$PVERSION
 install -m 644 FAQ $PKG/usr/doc/$PNAME-$PVERSION
@@ -63,3 +62,4 @@ makepkg -l y -c n $CWD/$PNAME-$PVERSION-$ARCH-$BUILD.tgz
 
 # Clean up the sandbox directory
 rm -rf $PKG
+rm -rf $TMP/$PNAME

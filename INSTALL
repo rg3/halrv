@@ -9,12 +9,7 @@ Supported systems using this method:
   resulting package.
 
 If no official package is available and no package creation tool is
-available, halrv really only needs two files you can copy to /usr/local:
+available, you can install halrv using the setup.py script. Normally as
+root, you would run:
 
-* halrv, the program itself, which should go to /usr/local/bin
-* halrv.1, the program manpage, which should go to /usr/local/man/man1
-
-To run, halrv needs Python and dbus-python.
-
-Uninstalling the program is as easy as removing those two files you
-would have copied.
+python setup.py install

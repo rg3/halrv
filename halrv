@@ -155,7 +155,6 @@ def get_bus_name(devs, remvols, devicename):
 # Perform "ls" operation
 def ls_operation(devs, remvols):
 	# Header
-	print '%-12s%-12s%-38s%s' % ('Device', 'Label', 'UUID', 'Mount point')
 
 	# Content to be printed (needed to sort the lines prior to printing them)
 	lines = [(	devs[x].GetProperty('block.device'),
@@ -163,10 +162,24 @@ def ls_operation(devs, remvols):
 			devs[x].GetProperty('volume.uuid'),
 			devs[x].GetProperty('volume.mount_point'),
 		) for x in remvols]
+	lines.sort()
+	lines[:0] = [('Device', 'Label', 'UUID', 'Mount point')]
+
+	# Calculate optimum field length
+	lengths = [max([len(line[x]) for line in lines]) for x in xrange(len(lines[0]))]
+
+	# Field separator and horizontal bar
+	fieldsep = '  '
+	horbar = '-' * (sum(lengths) + (len(fieldsep) * len(lengths) - 1))
+
+	# Optimum line format
+	format = fieldsep.join('%%-%ss' % x for x in lengths)
 
 	# Actual printing
-	for line in sorted(lines):
-		print '%-12s%-12s%-38s%s' % line
+	print format % lines[0]
+	print horbar
+	for line in lines[1:]:
+		print format % line
 
 # Perform "mount" operation
 def mount_operation(devs, remvols, devicename, fsopts, uuidopts):

@@ -244,7 +244,7 @@ def umount_operation(devs, remvols, devicename, do_eject=False):
 			last_action = 'eject'
 			remvols[busname].Eject([])
 	except (dbus.exceptions.DBusException, ), err:
-		print 'ERROR: unable to %s %s: %s' % (last_action, devs[busname].GetProperty('block.device'), err.get_dbus_name())
+		print 'ERROR: unable to %s %s: %s' % (last_action, devicename, err.get_dbus_name())
 
 ### Main program ###
 if __name__ == '__main__':

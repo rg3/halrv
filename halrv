@@ -80,14 +80,24 @@ def parse_args(argv):
 	operation = None
 	devicename = None
 
+	# 'ls' is the default operation
 	if len(argv) == 1:
 		operation = 'ls'
 	else:
 		operation = argv[1]
-	if operation not in ['help', '-?', '-h', '--help', 'version', '--version', 'ls', 'mount', 'umount', 'eject']:
+	
+	# Find operation by unique prefix
+	all_ops = ['help', '-?', '-h', '--help', 'version', '--version', 'ls', 'mount', 'umount', 'eject']
+	matching_ops = [x for x in all_ops if x.startswith(operation)]
+	if len(matching_ops) != 1:
 		sys.exit('ERROR: %s: unknown operation; use the "help" operation for a list' % operation)
+	operation = matching_ops[0]
+
+	# Operations with no argument
 	if operation in ['ls', 'help', '-?', '-h', '--help', 'version', '--version'] and len(argv) > 2:
 		sys.exit('ERROR: %s does not expect any argument')
+	
+	# Operations with single argument
 	if operation in ['mount', 'umount', 'eject']:
 		if len(argv) != 3:
 			sys.exit('ERROR: %s needs one argument' % operation)

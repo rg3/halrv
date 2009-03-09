@@ -19,6 +19,12 @@ called "safe removal").
 With halrv, you can list removable volumes, mount a specific device, and
 eject a specific device. It does not depend on any GUI libraries.
 
+If present, the first argument to the program must be a known operation
+name. Typing the full name is not needed, however, as long as the
+argument provides a unique operation prefix. For example, the "mount"
+operation is the only one startin with "m", so typing that single
+character is enough.
+
 == OPERATIONS ==
 
 === help, --help, -h, -? ===

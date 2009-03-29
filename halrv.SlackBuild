@@ -14,7 +14,7 @@ export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 # Initial variables
 PNAME=halrv		# Package name
-PVERSION=3		# Package version
+PVERSION=4_beta		# Package version
 ARCH=${ARCH:-noarch}	# Package architecture
 BUILD=${BUILD:-1rg}	# Build number plus packager initials
 

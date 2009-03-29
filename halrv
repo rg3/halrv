@@ -11,7 +11,7 @@ import os.path
 import sys
 
 # Some constants
-PROGRAM_VERSION = 3
+PROGRAM_VERSION = '4_beta'
 
 HAL_SERVICE = 'org.freedesktop.Hal'
 HAL_MANAGER_OBJ = '/org/freedesktop/Hal/Manager'

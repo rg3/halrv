@@ -4,7 +4,7 @@ from distutils.core import setup
 
 setup(
 	name='halrv',
-	version='3',
+	version='4_beta',
 	description='HAL Removable Volumes Manager',
 	author='Ricardo Garcia',
 	url='http://github.com/rg3/halrv/tree/master',

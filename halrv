@@ -5,6 +5,7 @@
 import ConfigParser
 import dbus
 import dbus.exceptions
+import getpass
 import os
 import os.path
 import sys
@@ -17,6 +18,7 @@ HAL_MANAGER_OBJ = '/org/freedesktop/Hal/Manager'
 HAL_MANAGER_IFACE = 'org.freedesktop.Hal.Manager'
 HAL_DEVICE_IFACE = 'org.freedesktop.Hal.Device'
 HAL_VOLUME_IFACE = 'org.freedesktop.Hal.Device.Volume'
+HAL_CRYPTO_IFACE = 'org.freedesktop.Hal.Device.Volume.Crypto'
 
 CONFIG_FILENAME = '.halrv.conf'
 FS_SECTION_PREFIX = 'fs'
@@ -162,6 +164,27 @@ def get_bus_name(devs, remvols, devicename):
 		sys.exit('ERROR: unexpected situation: %s matches more than one device' % devicename)
 	return matching[0]
 
+# Setup an encrypted volume
+def crypt_setup(hal_device):
+	passphrase = getpass.getpass('Encrypted volume detected. Enter passphrase: ')
+	crypto_iface = dbus.Interface(hal_device, HAL_CRYPTO_IFACE)
+	try:
+		crypto_iface.Setup(passphrase)
+		print 'Unencrypted volume created. Check device list again.'
+	except (dbus.exceptions.DBusException, ), err:
+		busname = err.get_dbus_name()
+		if busname == 'org.freedesktop.Hal.Device.Volume.Crypto.SetupPasswordError':
+			sys.exit('ERROR: wrong password')
+		sys.exit('ERROR: unable to set up encrypted volume: %s' % busname)
+
+# Tear down an encrypted volume
+def crypt_teardown(hal_device):
+	try:
+		crypto_iface = dbus.Interface(hal_device, HAL_CRYPTO_IFACE)
+		crypto_iface.Teardown()
+	except (dbus.exceptions.DBusException, ), err:
+		print >>sys.stderr, 'WARNING: unable to tear down encrypted volume: %s' % err.get_dbus_name()
+
 # Perform "ls" operation
 def ls_operation(devs, remvols):
 	# Header
@@ -206,6 +229,11 @@ def mount_operation(devs, remvols, devicename, fsopts, uuidopts):
 	if len(fstype) == 0:
 		sys.exit('ERROR: unable to know filesystem type on %s' % devicename)
 
+	# Setup encrypted volume if appropriate
+	if devs[busname].GetProperty('volume.fsusage') == 'crypto':
+		crypt_setup(devs[busname])
+		return
+
 	# Decide mount point
 	label = devs[busname].GetProperty('volume.label')
 	if len(label) == 0:
@@ -236,18 +264,24 @@ def umount_operation(devs, remvols, devicename, do_eject=False):
 	# Get device bus name
 	busname = get_bus_name(devs, remvols, devicename)
 
+	# Tear down encrypted volume if appropriate
+	is_crypto = (devs[busname].GetProperty('volume.fsusage') == 'crypto')
+	if is_crypto:
+		crypt_teardown(devs[busname])
+
 	# Attempt to umount/eject the device
 	try:
 		# First, attempt to unmount it
-		try:
-			remvols[busname].Unmount(dbus.Array([],'s'))
-		except (dbus.exceptions.DBusException, ), err:
-			if err.get_dbus_name() == 'org.freedesktop.Hal.Device.Volume.NotMounted':
-				if not do_eject:
-					print '%s is not mounted' % devicename
-				pass
-			else:
-				raise err
+		if not is_crypto:
+			try:
+				remvols[busname].Unmount(dbus.Array([],'s'))
+			except (dbus.exceptions.DBusException, ), err:
+				if err.get_dbus_name() == 'org.freedesktop.Hal.Device.Volume.NotMounted':
+					if not do_eject:
+						print '%s is not mounted' % devicename
+					pass
+				else:
+					raise err
 
 		# Eject it if needed
 		if do_eject:

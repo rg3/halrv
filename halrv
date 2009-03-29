@@ -240,7 +240,7 @@ def umount_operation(devs, remvols, devicename, do_eject=False):
 	try:
 		# First, attempt to unmount it
 		try:
-			remvols[busname].Unmount([])
+			remvols[busname].Unmount(dbus.Array([],'s'))
 		except (dbus.exceptions.DBusException, ), err:
 			if err.get_dbus_name() == 'org.freedesktop.Hal.Device.Volume.NotMounted':
 				if not do_eject:
@@ -252,7 +252,7 @@ def umount_operation(devs, remvols, devicename, do_eject=False):
 		# Eject it if needed
 		if do_eject:
 			last_action = 'eject'
-			remvols[busname].Eject([])
+			remvols[busname].Eject(dbus.Array([], 's'))
 	except (dbus.exceptions.DBusException, ), err:
 		print 'ERROR: unable to %s %s: %s' % (last_action, devicename, err.get_dbus_name())
 

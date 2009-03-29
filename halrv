@@ -220,7 +220,7 @@ def mount_operation(devs, remvols, devicename, fsopts, uuidopts):
 	elif fstype in fsopts:
 		mountopts = fsopts[fstype]
 	else:
-		mountopts = []
+		mountopts = dbus.Array([], 's')
 
 	# Try to mount the device
 	try:

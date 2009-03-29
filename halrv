@@ -72,7 +72,7 @@ def parse_config_file(home):
 			fs_opts[splitname[1]] = mount_opts
 		else:
 			uuid_opts[splitname[1]] = mount_opts
-	
+
 	return (fs_opts, uuid_opts)
 
 # Parse arguments; return tuple (operation, arg)
@@ -85,7 +85,7 @@ def parse_args(argv):
 		operation = 'ls'
 	else:
 		operation = argv[1]
-	
+
 	# Find operation by unique prefix
 	all_ops = ['help', '-?', '-h', '--help', 'version', '--version', 'ls', 'mount', 'umount', 'eject']
 	matching_ops = [x for x in all_ops if x.startswith(operation)]
@@ -96,7 +96,7 @@ def parse_args(argv):
 	# Operations with no argument
 	if operation in ['ls', 'help', '-?', '-h', '--help', 'version', '--version'] and len(argv) > 2:
 		sys.exit('ERROR: %s does not expect any argument')
-	
+
 	# Operations with single argument
 	if operation in ['mount', 'umount', 'eject']:
 		if len(argv) != 3:
@@ -205,14 +205,14 @@ def mount_operation(devs, remvols, devicename, fsopts, uuidopts):
 	fstype = devs[busname].GetProperty('volume.fstype')
 	if len(fstype) == 0:
 		sys.exit('ERROR: unable to know filesystem type on %s' % devicename)
-	
+
 	# Decide mount point
 	label = devs[busname].GetProperty('volume.label')
 	if len(label) == 0:
 		mountpoint = os.path.basename(devicename)
 	else:
 		mountpoint = label
-	
+
 	# Get mount options
 	uuid = devs[busname].GetProperty('volume.uuid')
 	if uuid in uuidopts:
@@ -221,7 +221,7 @@ def mount_operation(devs, remvols, devicename, fsopts, uuidopts):
 		mountopts = fsopts[fstype]
 	else:
 		mountopts = []
-	
+
 	# Try to mount the device
 	try:
 		remvols[busname].Mount(mountpoint, fstype, mountopts)
@@ -261,38 +261,38 @@ if __name__ == '__main__':
 
 	# Get home dir
 	home = get_home()
-	
+
 	# Create config file if it does not exist
 	maybe_create_config_file(home)
 
 	# Parse config file
 	(fsopts, uuidopts) = parse_config_file(home)
-	
+
 	# Parse args
 	(operation, devicename) = parse_args(sys.argv)
-	
+
 	# Help operation
 	if operation in ['help', '-?', '-h', '--help']:
 		print_help()
 		sys.exit(0)
-	
+
 	# Version operation
 	if operation in ['version', '--version']:
 		print_version()
 		sys.exit(0)
-	
+
 	# Get the system bus
 	sysbus = get_bus()
-	
+
 	# Get the HAL manager
 	halman = get_hal_manager(sysbus)
-	
+
 	# Get the list of devices
 	devs = get_devices(sysbus, halman)
-	
+
 	# Get the list of volumes
 	remvols = get_volumes(sysbus, devs)
-	
+
 	# Perform each operation
 	if operation == 'ls':
 		ls_operation(devs, remvols)
@@ -302,6 +302,6 @@ if __name__ == '__main__':
 		umount_operation(devs, remvols, devicename)
 	else:
 		umount_operation(devs, remvols, devicename, do_eject=True)
-	
+
 	# Exit with success
 	sys.exit(0)

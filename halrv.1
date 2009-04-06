@@ -1,11 +1,11 @@
 .\"     Title: halrv
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 02/15/2009
+.\"      Date: 04/06/2009
 .\"    Manual: 
 .\"    Source: 
 .\"
-.TH "HALRV" "1" "02/15/2009" "" ""
+.TH "HALRV" "1" "04/06/2009" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -19,6 +19,8 @@ halrv [operation [device]]
 halrv is a simple command line tool to manage removable volumes using HAL\. It aims to be the command line equivalent of many GUI programs that display a list of removable drives in your computer, allow you to mount them by clicking on their icon and, later, unmount and eject them (also called "safe removal")\.
 .sp
 With halrv, you can list removable volumes, mount a specific device, and eject a specific device\. It does not depend on any GUI libraries\.
+.sp
+If present, the first argument to the program must be a known operation name\. Typing the full name is not needed, however, as long as the argument provides a unique operation prefix\. For example, the "mount" operation is the only one startin with "m", so typing that single character is enough\.
 .sp
 .SH "OPERATIONS"
 .SS "help, \-\-help, \-h, \-?"
@@ -65,5 +67,5 @@ mount_options: uid=1000,shortname=winnt
 .fi
 .RE
 .SH "AUTHOR"
-Ricardo Garcia Gonzalez: http://freshmeat\.net/users/rg3/
+Ricardo Garcia Gonzalez: http://rg03\.wordpress\.com/contact\-me/
 .sp
